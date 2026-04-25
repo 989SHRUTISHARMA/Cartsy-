@@ -1,19 +1,32 @@
 import React from "react";
-import { FaInstagram, FaWhatsapp, FaFacebook, FaTwitter, FaPhone } from "react-icons/fa";
+import {
+  FaInstagram,
+  FaWhatsapp,
+  FaFacebook,
+  FaTwitter,
+  FaPhone
+} from "react-icons/fa";
 
 // payment icons
 import visa from "../assets/images/visa.png";
 import mastercard from "../assets/images/mastercard.png";
 import paypal from "../assets/images/paypal.png";
-import upi from "../assets/images/payoneer.png"; // fix this
+import upi from "../assets/images/payoneer.png";
 
 export default function Footer() {
+
+  // smooth scroll to footer/contact section
+  const scrollToFooter = () => {
+    document.getElementById("footer").scrollIntoView({
+      behavior: "smooth"
+    });
+  };
+
   return (
-    <footer className="footer">
+    <footer className="footer" id="footer">
 
       <div className="footer-top">
 
-        {/* ABOUT */}
         <div className="footer-col">
           <h4>ABOUT</h4>
           <p>Contact Us</p>
@@ -22,14 +35,12 @@ export default function Footer() {
           <p>Cartsy Stories</p>
         </div>
 
-        {/* GROUP */}
         <div className="footer-col">
           <h4>GROUP COMPANIES</h4>
           <p>Myntra</p>
           <p>Shopsy</p>
         </div>
 
-        {/* HELP */}
         <div className="footer-col">
           <h4>HELP</h4>
           <p>Payments</p>
@@ -38,7 +49,6 @@ export default function Footer() {
           <p>FAQ</p>
         </div>
 
-        {/* POLICY */}
         <div className="footer-col">
           <h4>CONSUMER POLICY</h4>
           <p>Cancellation & Returns</p>
@@ -47,7 +57,7 @@ export default function Footer() {
           <p>Privacy</p>
         </div>
 
-        {/* CONTACT + SOCIAL */}
+        {/* CONTACT */}
         <div className="footer-col address">
           <h4>Contact Us</h4>
 
@@ -55,19 +65,17 @@ export default function Footer() {
           <p>Email: support@cartsy.com</p>
 
           <div className="social-icons">
-            <FaInstagram />
-            <FaWhatsapp />
-            <FaFacebook />
-            <FaTwitter />
+            <FaInstagram onClick={scrollToFooter} className="icon instagram" />
+            <FaWhatsapp onClick={scrollToFooter} className="icon whatsapp" />
+            <FaFacebook onClick={scrollToFooter} className="icon facebook" />
+            <FaTwitter onClick={scrollToFooter} className="icon twitter" />
           </div>
         </div>
 
       </div>
 
-      {/* Divider */}
       <div className="divider"></div>
 
-      {/* Bottom Row */}
       <div className="footer-bottom">
 
         <div className="footer-links">

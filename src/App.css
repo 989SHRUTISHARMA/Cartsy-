@@ -949,41 +949,69 @@ body{
   from { opacity: 0; }
   to { opacity: 1; }
 }
-/* ================= RESPONSIVE FIX (FINAL CLEAN) ================= */
+/* ================= WISHLIST FINAL FIX ================= */
 
-/* Tablet */
-@media (max-width: 1024px) {
+.wishlist-container {
+  padding: 40px;
+}
 
-  .search-bar {
-    width: 50%;
-  }
+.wishlist-item {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  padding: 15px 0;
+  border-bottom: 1px solid #ddd;
+  transition: 0.3s ease;
+}
 
-  .banner-content h1 {
-    font-size: 38px;
-  }
+.wishlist-item:hover {
+  transform: translateY(-5px);
+}
 
-  .product-grid {
-    grid-template-columns: repeat(3, 1fr);
-    padding: 25px;
-  }
+.wishlist-item img {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+}
 
-  .cart-container {
-    flex-direction: column;
-  }
+.wishlist-details {
+  flex: 1;
+}
 
-  .cart-summary {
-    width: 100%;
+.wishlist-actions {
+  display: flex;
+  gap: 10px;
+}
+
+
+/* ================= GLOBAL FIX ================= */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+/* ================= ANIMATION GLOBAL ================= */
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.6s ease forwards;
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-/* Mobile */
+/* ================= NAVBAR RESPONSIVE ================= */
 @media (max-width: 768px) {
-
-  body {
-    overflow-x: hidden;
-  }
-
-  /* NAVBAR */
   .navbar {
     flex-direction: column;
     gap: 10px;
@@ -992,56 +1020,76 @@ body{
   }
 
   .search-bar {
-    width: 100%;
+    width: 100% !important;
   }
 
   .nav-icons {
     justify-content: center;
     width: 100%;
+    gap: 15px;
   }
 
-  /* BANNER FIX (MOST IMPORTANT) */
+  .logo-img {
+    width: 90px;
+  }
+}
+
+/* ================= BANNER RESPONSIVE ================= */
+@media (max-width: 768px) {
   .banner {
-    height: 50vh;
+    height: 45vh;
   }
 
   .banner-content {
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    max-width: 90%;
     text-align: center;
+    max-width: 90%;
   }
 
   .banner-content h1 {
-    font-size: 28px;
+    font-size: 24px;
   }
 
   .banner-content p {
-    font-size: 14px;
+    font-size: 13px;
   }
 
   .banner-subtext {
-    left: 50%;
-    top: 65%;
-    transform: translateX(-50%);
     width: 90%;
+    left: 50%;
+    transform: translateX(-50%);
     font-size: 14px;
-    margin-top: 0;
   }
+}
 
-  /* PRODUCTS */
+/* ================= PRODUCT GRID ================= */
+@media (max-width: 1024px) {
+  .product-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
   .product-grid {
     grid-template-columns: repeat(2, 1fr);
     padding: 15px;
-    gap: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .product-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ================= CART RESPONSIVE ================= */
+@media (max-width: 768px) {
+  .cart-container {
+    flex-direction: column;
   }
 
-  .product-card img {
-    height: 150px;
-  }
-
-  /* CART */
   .cart-card {
     flex-direction: column;
     text-align: center;
@@ -1051,16 +1099,36 @@ body{
     width: 100%;
     height: 180px;
   }
+}
 
-  .qty {
-    justify-content: center;
+/* ================= WISHLIST FIX ================= */
+@media (max-width: 768px) {
+  .wishlist-item {
+    flex-direction: column;
+    align-items: flex-start;
   }
 
-  /* CATEGORY BAR */
+  .wishlist-item img {
+    width: 100%;
+    height: 180px;
+  }
+
+  .wishlist-actions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .wishlist-actions button {
+    width: 100%;
+  }
+}
+
+/* ================= CATEGORY SCROLL ================= */
+@media (max-width: 768px) {
   .category-bar {
     overflow-x: auto;
-    justify-content: flex-start;
     white-space: nowrap;
+    justify-content: flex-start;
   }
 
   .category-bar span {
@@ -1069,120 +1137,28 @@ body{
   }
 }
 
-/* Small Mobile */
-@media (max-width: 480px) {
-
-  .banner-content h1 {
-    font-size: 22px;
-  }
-
-  .product-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .product-card img {
-    height: 180px;
-  }
-
-  .shop-btn {
-    font-size: 12px;
-    padding: 8px 12px;
-  }
-}
-/* ================= WISHLIST RESPONSIVE FIX ================= */
-
-.wishlist-container {
-  padding: 40px;
+/* ================= BUTTON ANIMATION ================= */
+button {
+  transition: all 0.3s ease;
 }
 
-/* ITEM ROW (DESKTOP DEFAULT) */
+button:hover {
+  transform: scale(1.05);
+}
+
+button:active {
+  transform: scale(0.95);
+}
+
+/* ================= CARD ANIMATION ================= */
+.product-card,
+.cart-card,
 .wishlist-item {
-  display: flex;
-  gap: 20px;
-  border-bottom: 1px solid #ddd;
-  padding: 15px 0;
-  align-items: center;
+  transition: 0.3s ease;
 }
 
-/* IMAGE */
-.wishlist-item img {
-  width: 120px;
-  height: 120px;
-  object-fit: contain;
-}
-
-/* DETAILS */
-.wishlist-details {
-  flex: 1;
-}
-
-/* ACTION BUTTONS */
-.wishlist-actions {
-  display: flex;
-  gap: 10px;
-}
-
-/* ================= TABLET ================= */
-@media (max-width: 768px) {
-
-  .wishlist-container {
-    padding: 20px;
-  }
-
-  .wishlist-item {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-    padding: 15px;
-  }
-
-  .wishlist-item img {
-    width: 100%;
-    height: 200px;
-  }
-
-  .wishlist-actions {
-    width: 100%;
-    flex-wrap: wrap;
-  }
-
-  .wishlist-actions button {
-    width: 100%;
-  }
-}
-
-/* ================= MOBILE ================= */
-@media (max-width: 480px) {
-
-  .wishlist-container {
-    padding: 15px;
-  }
-
-  .wishlist-item {
-    padding: 10px;
-  }
-
-  .wishlist-item img {
-    width: 100%;
-    height: 180px;
-  }
-
-  .wishlist-details h4 {
-    font-size: 16px;
-  }
-
-  .wishlist-details p {
-    font-size: 14px;
-  }
-
-  .wishlist-actions {
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .wishlist-actions button {
-    width: 100%;
-    padding: 10px;
-  }
+.product-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
 }
 
