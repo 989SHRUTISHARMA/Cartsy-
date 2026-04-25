@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ProductList from "./components/ProductList";
 import Cart from "./components/Cart";
@@ -11,23 +11,35 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function App() {
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState("all");
+
   return (
     <BrowserRouter>
-      
-      {/* Navbar */}
-      <Navbar />
 
-      {/* Routes */}
+      {/* NAVBAR (controls search + category) */}
+      <Navbar 
+        setSearch={setSearch} 
+        setCategory={setCategory}
+        category={category}
+      />
+
+      {/* ROUTES */}
       <Routes>
-        <Route path="/" element={<ProductList />} />
+        <Route 
+          path="/" 
+          element={
+            <ProductList 
+              search={search} 
+              category={category} 
+            />
+          } 
+        />
         <Route path="/cart" element={<Cart />} />
         <Route path="/wishlist" element={<Wishlist />} />
       </Routes>
 
-      {/* Footer */}
       <Footer />
-
-      {/* ✅ Toast Container MUST be inside return */}
       <ToastContainer />
 
     </BrowserRouter>

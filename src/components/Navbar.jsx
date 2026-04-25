@@ -1,10 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { FaShoppingCart, FaHeart, FaUser } from "react-icons/fa";
+import { FaShoppingCart, FaHeart, FaUser, FaSearch } from "react-icons/fa";
 import logo from "../assets/images/clogo.png";
 
-function Navbar() {
+function Navbar({ setSearch, setCategory }) {
+
   const items = useSelector((state) => state.cart.items);
   const wishlistItems = useSelector((state) => state.wishlist.items);
 
@@ -14,42 +15,56 @@ function Navbar() {
   );
 
   return (
-    <div className="navbar">
+    <>
+      {/* NAVBAR */}
+      <div className="navbar">
 
-      {/* Logo clickable */}
-      <Link to="/">
-        <img src={logo} alt="Cartsy Logo" className="logo-img" />
-      </Link>
-
-      {/* Search */}
-      <input
-        type="text"
-        placeholder="Search gifts..."
-        className="search-bar"
-      />
-
-      {/* Icons */}
-      <div className="nav-icons">
-
-        {/* Wishlist */}
-        <Link to="/wishlist" className="icon cart-icon">
-          <FaHeart />
-          <span className="cart-count">{wishlistItems.length}</span>
+        <Link to="/">
+          <img src={logo} className="logo-img" alt="logo" />
         </Link>
 
-        {/* Cart */}
-        <Link to="/cart" className="icon cart-icon">
-          <FaShoppingCart />
-          <span className="cart-count">{totalQuantity}</span>
-        </Link>
+        {/* SEARCH */}
+        <div className="search-box">
+          <FaSearch />
+          <input
+            placeholder="Search products..."
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
 
-        {/* Profile */}
-        <Link to="/profile" className="icon">
-          <FaUser />
-        </Link>
+        {/* ICONS */}
+        <div className="nav-icons">
+
+          <Link to="/wishlist">
+            <FaHeart />
+            <span>{wishlistItems.length}</span>
+          </Link>
+
+          <Link to="/cart">
+            <FaShoppingCart />
+            <span>{totalQuantity}</span>
+          </Link>
+
+          <Link to="/profile">
+            <FaUser />
+          </Link>
+
+        </div>
+      </div>
+
+      {/* CATEGORY BAR */}
+      <div className="category-bar">
+
+     <div className="category-bar">
+  <span onClick={() => setCategory("all")}>All</span>
+  <span onClick={() => setCategory("beauty")}>Beauty</span>
+  <span onClick={() => setCategory("fashion")}>Fashion</span>
+  <span onClick={() => setCategory("electronics")}>Electronics</span>
+  <span onClick={() => setCategory("home")}>Home</span>
+</div> 
 
       </div>
-    </div>
+    </>
   );
 }
 

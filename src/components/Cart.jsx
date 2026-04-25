@@ -8,7 +8,6 @@ import {
 import { useState } from "react";
 import { toast } from "react-toastify";
 
-
 export default function Cart() {
   const { items } = useSelector((state) => state.cart);
   const dispatch = useDispatch();
@@ -16,56 +15,92 @@ export default function Cart() {
   const [coupon, setCoupon] = useState("");
   const [discount, setDiscount] = useState(0);
 
-  const subtotal = items.reduce(
+  // 🔥 Coupon data (advanced)
+  const coupons = [
+    { code: "FLAT10", type: "percent", value: 10, min: 500, max: 200 },
+    { code: "SAVE100", type: "flat", value: 100, min: 800 },
+    { code: "SALE20", type: "percent", value: 20, min: 1000, max: 300 },
+  ];
+
+  // 🔥 MRP
+  const mrp = items.reduce(
     (sum, item) => sum + item.price * item.quantity * 83,
     0
   );
 
+  const productDiscount = mrp * 0.2;
+  const subtotal = mrp - productDiscount;
   const delivery = subtotal > 500 ? 0 : 40;
-  const finalDiscount = discount;
-  const total = subtotal + delivery - finalDiscount;
+  const total = subtotal + delivery - discount;
 
-  // 🎟️ Coupon system
-  const applyCoupon = () => {
-    if (coupon === "FLAT10") {
-      setDiscount(subtotal * 0.1);
-      toast.success("FLAT10 applied 🎉");
-    } else if (coupon === "SAVE100") {
-      setDiscount(100);
-      toast.success("SAVE100 applied 🎉");
-    } else {
-      setDiscount(0);
+  // 🎟️ Apply Coupon (SMART)
+  const applyCoupon = (code) => {
+    const c = code || coupon;
+    const found = coupons.find((cp) => cp.code === c);
+
+    if (!found) {
       toast.error("Invalid Coupon ❌");
+      return;
     }
+
+    // 👉 check used coupons
+    const used = JSON.parse(localStorage.getItem("usedCoupons")) || [];
+
+    if (used.includes(found.code)) {
+      toast.error("Coupon already used ❌");
+      return;
+    }
+
+    // 👉 min order check
+    if (subtotal < found.min) {
+      toast.error(`Min ₹${found.min} required ❌`);
+      return;
+    }
+
+    let discountValue = 0;
+
+    if (found.type === "percent") {
+      discountValue = (subtotal * found.value) / 100;
+
+      if (found.max) {
+        discountValue = Math.min(discountValue, found.max);
+      }
+    } else {
+      discountValue = found.value;
+    }
+
+    setDiscount(discountValue);
+
+    // 👉 mark used
+    localStorage.setItem(
+      "usedCoupons",
+      JSON.stringify([...used, found.code])
+    );
+
+    toast.success(`${found.code} applied 🎉`);
+    setCoupon(c);
   };
 
-  // 💳 Razorpay Payment
+  // 💳 Dummy payment
   const handlePayment = () => {
-    const options = {
-      key: "YOUR_RAZORPAY_KEY_ID",
-      amount: total * 100,
-      currency: "INR",
-      name: "Cartsy Store",
-      description: "Order Payment",
+    if (items.length === 0) {
+      toast.error("Cart is empty ❌");
+      return;
+    }
 
-      handler: function () {
-        dispatch(clearCart());
-        toast.success("🎉 Order Placed Successfully!");
-      },
+    toast.info("Processing payment... ⏳");
 
-      theme: {
-        color: "#3399cc",
-      },
-    };
-
-    const rzp = new window.Razorpay(options);
-    rzp.open();
+    setTimeout(() => {
+      const orderId = "ORD" + Date.now();
+      toast.success(`🎉 Order ${orderId} placed successfully!`);
+      dispatch(clearCart());
+    }, 1500);
   };
 
   return (
     <div className="cart-container">
 
-      {/* LEFT SIDE */}
+      {/* LEFT */}
       <div className="cart-left">
         <h2>My Cart 🛒</h2>
 
@@ -73,12 +108,21 @@ export default function Cart() {
 
         {items.map((item) => (
           <div className="cart-card" key={item.id}>
-
             <img src={item.image} alt={item.title} />
 
             <div className="cart-details">
               <h3>{item.title}</h3>
-              <p>₹{(item.price * 83).toFixed(0)}</p>
+
+              <p>
+                ₹{(item.price * 83 * 0.8).toFixed(0)}
+                <span style={{
+                  textDecoration: "line-through",
+                  marginLeft: "10px",
+                  color: "#888"
+                }}>
+                  ₹{(item.price * 83).toFixed(0)}
+                </span>
+              </p>
 
               <div className="qty">
                 <button onClick={() => dispatch(decreaseQty(item.id))}>-</button>
@@ -100,25 +144,34 @@ export default function Cart() {
         ))}
       </div>
 
-      {/* RIGHT SIDE */}
+      {/* RIGHT */}
       {items.length > 0 && (
         <div className="cart-right">
 
           <h3>Price Details</h3>
 
           <div className="summary-row">
-            <span>Subtotal</span>
-            <span>₹{subtotal.toFixed(0)}</span>
+            <span>MRP</span>
+            <span>₹{mrp.toFixed(0)}</span>
+          </div>
+
+          <div className="summary-row">
+            <span>Product Discount</span>
+            <span style={{ color: "green" }}>
+              -₹{productDiscount.toFixed(0)}
+            </span>
+          </div>
+
+          <div className="summary-row">
+            <span>Coupon Discount</span>
+            <span style={{ color: "green" }}>
+              -₹{discount.toFixed(0)}
+            </span>
           </div>
 
           <div className="summary-row">
             <span>Delivery</span>
-            <span>₹{delivery}</span>
-          </div>
-
-          <div className="summary-row">
-            <span>Discount</span>
-            <span>-₹{finalDiscount.toFixed(0)}</span>
+            <span>{delivery === 0 ? "Free" : `₹${delivery}`}</span>
           </div>
 
           <hr />
@@ -128,14 +181,34 @@ export default function Cart() {
             <span>₹{total.toFixed(0)}</span>
           </div>
 
-          {/* Coupon */}
+          {/* 🎟️ Input */}
           <div style={{ marginTop: "10px" }}>
             <input
               placeholder="Enter coupon"
               value={coupon}
               onChange={(e) => setCoupon(e.target.value)}
             />
-            <button onClick={applyCoupon}>Apply</button>
+            <button onClick={() => applyCoupon()}>Apply</button>
+          </div>
+
+          {/* 🔥 Coupon UI */}
+          <div style={{ marginTop: "15px" }}>
+            <p><b>Available Coupons:</b></p>
+
+            {coupons.map((c) => (
+              <div
+                key={c.code}
+                className="coupon-box"
+                onClick={() => applyCoupon(c.code)}
+              >
+                {c.code} - 
+                {c.type === "percent"
+                  ? `${c.value}% OFF`
+                  : `₹${c.value} OFF`}
+                <br />
+                <small>Min ₹{c.min}</small>
+              </div>
+            ))}
           </div>
 
           {/* Payment */}
@@ -143,13 +216,15 @@ export default function Cart() {
             Place Order
           </button>
 
-          <button className="clear" onClick={() => {
-            dispatch(clearCart());
-            toast.success("Cart Cleared");
-          }}>
+          <button
+            className="clear"
+            onClick={() => {
+              dispatch(clearCart());
+              toast.success("Cart Cleared");
+            }}
+          >
             Clear Cart
           </button>
-
         </div>
       )}
     </div>

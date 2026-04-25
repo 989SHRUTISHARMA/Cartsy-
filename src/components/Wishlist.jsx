@@ -1,54 +1,65 @@
 import { useSelector, useDispatch } from "react-redux";
 import { toggleWishlist } from "../features/WishlistSlice";
+import { addToCart } from "../features/CartSlice";
+import { toast } from "react-toastify";
 
 export default function Wishlist() {
   const wishlist = useSelector((state) => state.wishlist.items);
+  const cartItems = useSelector((state) => state.cart.items);
   const dispatch = useDispatch();
 
-  return (
-    <div style={{ padding: "40px" }}>
-      <h2>Your Wishlist ❤️</h2>
+  const isInCart = (id) => {
+    return cartItems.some((item) => item.id === id);
+  };
 
-      {wishlist.length === 0 && <p>No items in wishlist</p>}
+  return (
+    <div className="wishlist-container">
+
+      <h2 className="wishlist-title">Your Wishlist ❤️</h2>
+
+      {wishlist.length === 0 && (
+        <p className="empty-text">No items in wishlist</p>
+      )}
 
       {wishlist.map((item) => (
-        <div
-          key={item.id}
-          style={{
-            display: "flex",
-            gap: "20px",
-            borderBottom: "1px solid #ddd",
-            padding: "15px 0",
-            alignItems: "center",
-          }}
-        >
-          {/* Image */}
-          <img
-            src={item.image}
-            alt={item.title}
-            style={{ width: "100px", height: "100px", objectFit: "contain" }}
-          />
+        <div key={item.id} className="wishlist-item">
 
-          {/* Details */}
-          <div style={{ flex: 1 }}>
+          {/* IMAGE */}
+          <img src={item.image} alt={item.title} />
+
+          {/* DETAILS */}
+          <div className="wishlist-details">
             <h4>{item.title}</h4>
             <p>₹{(item.price * 83).toFixed(0)}</p>
           </div>
 
-          {/* Remove */}
-          <button
-            onClick={() => dispatch(toggleWishlist(item))}
-            style={{
-              background: "red",
-              color: "#fff",
-              border: "none",
-              padding: "8px 12px",
-              cursor: "pointer",
-              borderRadius: "5px",
-            }}
-          >
-            Remove
-          </button>
+          {/* ACTIONS */}
+          <div className="wishlist-actions">
+
+            <button
+              className="cart-btn"
+              disabled={isInCart(item.id)}
+              onClick={() => {
+                dispatch(addToCart(item));
+                dispatch(toggleWishlist(item));
+                toast.success("Added to cart 🛒");
+              }}
+            >
+              {isInCart(item.id) ? "Already in Cart" : "Add to Cart"}
+            </button>
+
+            <button
+              className="remove-btn"
+              onClick={() => {
+                dispatch(toggleWishlist(item));
+                toast.info("Removed from wishlist");
+              }}
+            >
+              Remove
+            </button>
+
+          </div>
+
         </div>
       ))}
     </div>
