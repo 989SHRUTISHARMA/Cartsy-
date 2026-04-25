@@ -2,9 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { FaShoppingCart, FaHeart, FaUser } from "react-icons/fa";
-// import logo from "../assets/images/logo cartsy.jpg";
-// import logo from "../assets/images/cartsy-logo (5).png";
-import logo from "../assets/images/cartsy-logo.png";
+import logo from "../assets/images/clogo.png";
 
 function Navbar() {
   const items = useSelector((state) => state.cart.items);
