@@ -200,7 +200,10 @@ body{
   }
 
   .banner-content {
-    left: 40%;
+    right: 25%;
+    display:absolute;
+     top: 50%;
+    transform: translateY(-50%);
   }
 
   .banner-content h1 {

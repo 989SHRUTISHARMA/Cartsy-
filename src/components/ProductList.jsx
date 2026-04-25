@@ -50,9 +50,9 @@ export default function ProductList() {
     Promise.allSettled([
       fetch("https://dummyjson.com/products").then((res) => res.json()),
       fetch("https://fakestoreapi.com/products").then((res) => res.json()),
-      fetch("https://api.escuelajs.co/api/v1/products").then((res) =>
-        res.json()
-      ),
+      // fetch("https://api.escuelajs.co/api/v1/products").then((res) =>
+      //   res.json()
+      // ),
     ])
       .then((results) => {
         let allProducts = [];
@@ -81,24 +81,24 @@ export default function ProductList() {
           allProducts.push(...fakeProducts);
         }
 
-        if (results[2].status === "fulfilled") {
-          const escuelaProducts = results[2].value
-            .filter(
-              (p) =>
-                p.images &&
-                p.images.length > 0 &&
-                p.images[0].includes("http") &&
-                !p.images[0].includes("placeholder") &&
-                !removeEscuelaIds.includes(p.id)
-            )
-            .map((p) => ({
-              id: "e-" + p.id,
-              title: p.title,
-              price: p.price,
-              image: p.images[0],
-            }));
-          allProducts.push(...escuelaProducts);
-        }
+        // if (results[2].status === "fulfilled") {
+        //   const escuelaProducts = results[2].value
+        //     .filter(
+        //       (p) =>
+        //         p.images &&
+        //         p.images.length > 0 &&
+        //         p.images[0].includes("http") &&
+        //         !p.images[0].includes("placeholder") &&
+        //         !removeEscuelaIds.includes(p.id)
+        //     )
+        //     .map((p) => ({
+        //       id: "e-" + p.id,
+        //       title: p.title,
+        //       price: p.price,
+        //       image: p.images[0],
+        //     }));
+        //   allProducts.push(...escuelaProducts);
+        // }
 
         setProducts(allProducts);
       })
