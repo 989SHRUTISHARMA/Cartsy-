@@ -1,10 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { FaShoppingCart, FaHeart, FaUser, FaSearch } from "react-icons/fa";
+import { signOut } from "firebase/auth";
+import { auth } from "../config/firebase";
 import logo from "../assets/images/clogo.png";
 
-function Navbar({ setSearch, setCategory }) {
+function Navbar({ setSearch, setCategory, user }) {
+  const [open, setOpen] = useState(false);
 
   const items = useSelector((state) => state.cart.items);
   const wishlistItems = useSelector((state) => state.wishlist.items);
@@ -13,6 +16,10 @@ function Navbar({ setSearch, setCategory }) {
     (sum, item) => sum + item.quantity,
     0
   );
+
+  const handleLogout = async () => {
+    await signOut(auth);
+  };
 
   return (
     <>
@@ -45,24 +52,36 @@ function Navbar({ setSearch, setCategory }) {
             <span>{totalQuantity}</span>
           </Link>
 
-          <Link to="/profile">
-            <FaUser />
-          </Link>
+          {/* 👤 USER SECTION */}
+          {user ? (
+            <div className="user-menu">
+              <div className="user-icon" onClick={() => setOpen(!open)}>
+                <FaUser />
+              </div>
+
+              {open && (
+                <div className="dropdown">
+                  <p>{user.email}</p>
+                  <button onClick={handleLogout}>Logout</button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <Link to="/login">
+              <FaUser />
+            </Link>
+          )}
 
         </div>
       </div>
 
       {/* CATEGORY BAR */}
       <div className="category-bar">
-
-     <div className="category-bar">
-  <span onClick={() => setCategory("all")}>All</span>
-  <span onClick={() => setCategory("beauty")}>Beauty</span>
-  <span onClick={() => setCategory("fashion")}>Fashion</span>
-  <span onClick={() => setCategory("electronics")}>Electronics</span>
-  <span onClick={() => setCategory("home")}>Home</span>
-</div> 
-
+        <span onClick={() => setCategory("all")}>All</span>
+        <span onClick={() => setCategory("beauty")}>Beauty</span>
+        <span onClick={() => setCategory("fashion")}>Fashion</span>
+        <span onClick={() => setCategory("electronics")}>Electronics</span>
+        <span onClick={() => setCategory("home")}>Home</span>
       </div>
     </>
   );
