@@ -15,15 +15,11 @@ export default function ProductList({ search = "", category = "all" }) {
   const cartItems = useSelector((state) => state.cart.items);
 
   const [products, setProducts] = useState([]);
-  const [filteredProducts, setFilteredProducts] = useState([]);
-
   const [currentBanner, setCurrentBanner] = useState(0);
-  const [priceRange, setPriceRange] = useState("all");
-  const [sort, setSort] = useState("default");
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const productsPerPage = 8;
+  const INR_RATE = 83;
 
+  // ================= OLD BANNER RESTORED =================
   const banners = [
     "https://media.istockphoto.com/id/1184848537/photo/vintage-christmas-frame-border-flat-lay-fir-three-branches-blue-balls-and-snowflakes-over.jpg?s=2048x2048&w=is&k=20&c=02iHNCc0VTkxICvmKPMDy527aySaaVuHW3FZFA8kqlA=",
     "https://rukminim1.flixcart.com/fk-p-flap/3200/1560/image/2192ad9d315c3d3b.jpg?q=60",
@@ -32,8 +28,8 @@ export default function ProductList({ search = "", category = "all" }) {
     "https://rukminim1.flixcart.com/fk-p-flap/3200/1560/image/0417cb442593f5a1.png?q=60",
   ];
 
-  // ================= BANNER (NO CHANGE) =================
   const nextBanner = () => setCurrentBanner((p) => (p + 1) % banners.length);
+
   const prevBanner = () =>
     setCurrentBanner((p) => (p === 0 ? banners.length - 1 : p - 1));
 
@@ -42,100 +38,116 @@ export default function ProductList({ search = "", category = "all" }) {
     return () => clearInterval(interval);
   }, []);
 
-  // ================= FETCH PRODUCTS =================
+  // ================= FETCH (UNCHANGED) =================
   useEffect(() => {
-    Promise.allSettled([
-      fetch("https://dummyjson.com/products").then((res) => res.json()),
-      fetch("https://fakestoreapi.com/products").then((res) => res.json()),
-    ]).then((results) => {
-      let allProducts = [];
-
-      if (results[0].status === "fulfilled") {
-        const dummy = results[0].value.products.map((p) => ({
+    Promise.all([
+      fetch("https://dummyjson.com/products?limit=100").then((r) => r.json()),
+      fetch("https://fakestoreapi.com/products").then((r) => r.json()),
+    ]).then(([d, f]) => {
+      const all = [
+        ...d.products.map((p) => ({
           id: "d-" + p.id,
           title: p.title,
           price: p.price,
           image: p.thumbnail,
           category: p.category,
-        }));
-        allProducts.push(...dummy);
-      }
-
-      if (results[1].status === "fulfilled") {
-        const fake = results[1].value.map((p) => ({
+        })),
+        ...f.map((p) => ({
           id: "f-" + p.id,
           title: p.title,
           price: p.price,
           image: p.image,
-          category: p.category || "other",
-        }));
-        allProducts.push(...fake);
-      }
+          category: p.category,
+        })),
+      ];
 
-      setProducts(allProducts);
-      setFilteredProducts(allProducts);
+      const unique = Array.from(new Map(all.map((i) => [i.title, i])).values());
+
+      setProducts(unique);
     });
   }, []);
 
-  // ================= FILTER =================
-  useEffect(() => {
-    let data = [...products];
+  const getCategory = (type) => {
+    return products.filter((p) => {
+      const c = (p.category || "").toLowerCase();
 
-    if (search) {
-      data = data.filter((p) =>
-        p.title.toLowerCase().includes(search.toLowerCase())
-      );
-    }
+      if (type === "fashion")
+        return (
+          c.includes("clothing") || c.includes("mens") || c.includes("womens")
+        );
 
-    if (category !== "all") {
-      data = data.filter((p) => {
-        const cat = (p.category || "").toLowerCase();
-        const title = (p.title || "").toLowerCase();
+      if (type === "electronics")
+        return (
+          c.includes("electronics") ||
+          c.includes("laptop") ||
+          c.includes("phone")
+        );
 
-        if (category === "fashion") {
-          return cat.includes("clothing") || title.includes("shirt") || title.includes("dress");
-        }
+      if (type === "food") return c.includes("groceries");
 
-        if (category === "home") {
-          return cat.includes("home") || title.includes("sofa") || title.includes("chair");
-        }
+      if (type === "home") return c.includes("furniture");
 
-        if (category === "electronics") {
-          return cat.includes("electronics") || title.includes("phone") || title.includes("laptop");
-        }
+      if (type === "beauty")
+        return c.includes("skincare") || c.includes("beauty");
 
-        if (category === "beauty") {
-          return cat.includes("beauty") || title.includes("cream") || title.includes("makeup");
-        }
+      return true;
+    });
+  };
 
-        return true;
-      });
-    }
+  const applySearch = (list) => {
+    if (!search) return list;
+    return list.filter((p) =>
+      p.title.toLowerCase().includes(search.toLowerCase()),
+    );
+  };
 
-    if (priceRange === "low") data = data.filter((p) => p.price < 50);
-    if (priceRange === "mid") data = data.filter((p) => p.price >= 50 && p.price <= 150);
-    if (priceRange === "high") data = data.filter((p) => p.price > 150);
+  const trending = applySearch(products).slice(0, 15);
+  const fashion = applySearch(getCategory("fashion")).slice(0, 15);
+  const electronics = applySearch(getCategory("electronics")).slice(0, 15);
+  const food = applySearch(getCategory("food")).slice(0, 15);
 
-    if (sort === "low") data.sort((a, b) => a.price - b.price);
-    if (sort === "high") data.sort((a, b) => b.price - a.price);
+  const render = (list) => (
+    <div className="scroll-row">
+      {list.map((p) => {
+        const isInWishlist = wishlist.some((i) => i.id === p.id);
+        const isInCart = cartItems.some((i) => i.id === p.id);
 
-    setFilteredProducts(data);
-    setCurrentPage(1);
-  }, [products, search, category, priceRange, sort]);
+        return (
+          <div key={p.id} className="product-card">
+            <button
+              className={`add ${isInWishlist ? "active" : ""}`}
+              onClick={() => dispatch(toggleWishlist(p))}
+            >
+              {isInWishlist ? <FaHeart /> : <FaRegHeart />}
+            </button>
 
-  // ================= PAGINATION =================
-  const indexOfLast = currentPage * productsPerPage;
-  const currentProducts = filteredProducts.slice(
-    indexOfLast - productsPerPage,
-    indexOfLast
+            <img src={p.image} alt="" />
+
+            <h4>{p.title.slice(0, 40)}</h4>
+
+            <p className="price">₹{(p.price * INR_RATE).toFixed(0)}</p>
+
+            <button
+              className="cart-btn"
+              onClick={() => {
+                if (isInCart) navigate("/cart");
+                else {
+                  dispatch(addToCart(p));
+                  toast.success("Added 🛒");
+                }
+              }}
+            >
+              {isInCart ? "Go to Cart" : "Add"}
+            </button>
+          </div>
+        );
+      })}
+    </div>
   );
-
-  const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
 
   return (
     <div>
-
-      {/* ================= BANNER (UNCHANGED) ================= */}
+      {/* ================= OLD BANNER UI RESTORED ================= */}
       <div className="banner">
         <img
           src={banners[currentBanner]}
@@ -148,103 +160,66 @@ export default function ProductList({ search = "", category = "all" }) {
         {currentBanner === 0 && (
           <>
             <div className="overlay"></div>
+
             <div className="banner-content">
-              <h1>Shop Gifts</h1>
-              <p>Find the perfect gift 🎁</p>
-              <button className="shop-btn">Shop Now</button>
+              <h1>Discover Amazing Products </h1>
+              <p>Handpicked deals, just for you. Shop smart, shop better.</p>
+
+              <button
+                className="shop-btn"
+                onClick={() => {
+                  document.getElementById("products-section")?.scrollIntoView({
+                    behavior: "smooth",
+                  });
+                }}
+              >
+                Explore Products
+              </button>
             </div>
           </>
         )}
 
-        <button className="arrow left" onClick={prevBanner}>❮</button>
-        <button className="arrow right" onClick={nextBanner}>❯</button>
+        <button className="arrow left" onClick={prevBanner}>
+          ❮
+        </button>
+        <button className="arrow right" onClick={nextBanner}>
+          ❯
+        </button>
 
         <div className="dots">
-          {banners.map((_, index) => (
+          {banners.map((_, i) => (
             <span
-              key={index}
-              className={`dot ${currentBanner === index ? "active" : ""}`}
-              onClick={() => setCurrentBanner(index)}
+              key={i}
+              className={`dot ${currentBanner === i ? "active" : ""}`}
+              onClick={() => setCurrentBanner(i)}
             />
           ))}
         </div>
       </div>
 
-      {/* ================= FILTER ================= */}
-      <div className="filter-bar">
-        <select onChange={(e) => setPriceRange(e.target.value)}>
-          <option value="all">All</option>
-          <option value="low">Low</option>
-          <option value="mid">Mid</option>
-          <option value="high">High</option>
-        </select>
-
-        <select onChange={(e) => setSort(e.target.value)}>
-          <option value="default">Sort</option>
-          <option value="low">Low → High</option>
-          <option value="high">High → Low</option>
-        </select>
-      </div>
-
       {/* ================= PRODUCTS ================= */}
-      <div className="product-grid">
-        {currentProducts.map((p) => {
-          const isInWishlist = wishlist.some((i) => i.id === p.id);
-          const cartItem = cartItems.find((item) => item.id === p.id);
-          const isInCart = !!cartItem;
+     <div id="products-section">
+      {category === "all" ? (
+        <>
+          <h2 className="section-title">🔥 Trending</h2>
+          {render(trending)}
 
-          return (
-            <div key={p.id} className="product-card">
+          <h2 className="section-title">👕 Fashion</h2>
+          {render(fashion)}
 
-              {/* Wishlist */}
-              <button
-                className={`add ${isInWishlist ? "active" : ""}`}
-                onClick={() => dispatch(toggleWishlist(p))}
-              >
-                {isInWishlist ? <FaHeart /> : <FaRegHeart />}
-              </button>
+          <h2 className="section-title">📱 Electronics</h2>
+          {render(electronics)}
 
-              <img src={p.image} alt={p.title} />
-
-              <h3>{p.title}</h3>
-
-              <p className="price">₹{(p.price * 13).toFixed(0)}</p>
-
-              {/* CART BUTTON (UPGRADED UX) */}
-              <button
-                className={`cart-btn ${isInCart ? "added" : ""}`}
-                onClick={() => {
-                  if (isInCart) {
-                    navigate("/cart");
-                  } else {
-                    dispatch(addToCart(p));
-                    toast.success("Added to cart 🛒");
-                  }
-                }}
-              >
-                {isInCart
-                  ? `Go to Cart (${cartItem.quantity})`
-                  : "Add to Cart"}
-              </button>
-
-            </div>
-          );
-        })}
-      </div>
-
-      {/* ================= PAGINATION ================= */}
-      <div className="pagination">
-        {Array.from({ length: totalPages }, (_, i) => (
-          <button
-            key={i}
-            className={currentPage === i + 1 ? "active" : ""}
-            onClick={() => setCurrentPage(i + 1)}
-          >
-            {i + 1}
-          </button>
-        ))}
-      </div>
-
+          <h2 className="section-title">🍔 Food</h2>
+          {render(food)}
+        </>
+      ) : (
+        <>
+          <h2 className="section-title">{category}</h2>
+          {render(applySearch(getCategory(category)))}
+        </>
+      )}
+    </div>
     </div>
   );
 }

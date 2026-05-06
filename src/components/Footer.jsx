@@ -62,7 +62,7 @@ export default function Footer() {
           <h4>Contact Us</h4>
 
           <p><FaPhone /> +91 9876543210</p>
-          <p>Email: support@cartsy.com</p>
+          <p>Email: Cartsy@gmail.com</p>
 
           <div className="social-icons">
             <FaInstagram onClick={scrollToFooter} className="icon instagram" />

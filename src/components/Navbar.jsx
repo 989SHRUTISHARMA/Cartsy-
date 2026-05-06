@@ -8,6 +8,7 @@ import logo from "../assets/images/clogo.png";
 
 function Navbar({ setSearch, setCategory, user }) {
   const [open, setOpen] = useState(false);
+  const [active, setActive] = useState("all");
 
   const items = useSelector((state) => state.cart.items);
   const wishlistItems = useSelector((state) => state.wishlist.items);
@@ -21,11 +22,15 @@ function Navbar({ setSearch, setCategory, user }) {
     await signOut(auth);
   };
 
+  const handleCategory = (cat) => {
+    setCategory(cat);
+    setActive(cat);
+  };
+
   return (
     <>
       {/* NAVBAR */}
       <div className="navbar">
-
         <Link to="/">
           <img src={logo} className="logo-img" alt="logo" />
         </Link>
@@ -41,7 +46,6 @@ function Navbar({ setSearch, setCategory, user }) {
 
         {/* ICONS */}
         <div className="nav-icons">
-
           <Link to="/wishlist">
             <FaHeart />
             <span>{wishlistItems.length}</span>
@@ -52,7 +56,6 @@ function Navbar({ setSearch, setCategory, user }) {
             <span>{totalQuantity}</span>
           </Link>
 
-          {/* 👤 USER SECTION */}
           {user ? (
             <div className="user-menu">
               <div className="user-icon" onClick={() => setOpen(!open)}>
@@ -71,17 +74,17 @@ function Navbar({ setSearch, setCategory, user }) {
               <FaUser />
             </Link>
           )}
-
         </div>
       </div>
 
       {/* CATEGORY BAR */}
       <div className="category-bar">
-        <span onClick={() => setCategory("all")}>All</span>
-        <span onClick={() => setCategory("beauty")}>Beauty</span>
-        <span onClick={() => setCategory("fashion")}>Fashion</span>
-        <span onClick={() => setCategory("electronics")}>Electronics</span>
-        <span onClick={() => setCategory("home")}>Home</span>
+        <span className={active==="all"?"active":""} onClick={() => handleCategory("all")}>All</span>
+        <span className={active==="beauty"?"active":""} onClick={() => handleCategory("beauty")}>Beauty</span>
+        <span className={active==="fashion"?"active":""} onClick={() => handleCategory("fashion")}>Fashion</span>
+        <span className={active==="electronics"?"active":""} onClick={() => handleCategory("electronics")}>Electronics</span>
+        <span className={active==="home"?"active":""} onClick={() => handleCategory("home")}>Home</span>
+        <span className={active==="food"?"active":""} onClick={() => handleCategory("food")}>Food</span>
       </div>
     </>
   );

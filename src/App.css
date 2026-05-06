@@ -1669,3 +1669,272 @@ button:active {
   border: none;
   cursor: pointer;
 }
+/* product css */
+
+
+/* ===== ARROWS ===== */
+.arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0,0,0,0.5);
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.left { left: 10px; }
+.right { right: 10px; }
+
+/* ===== SECTION ===== */
+.section-title {
+  font-size: 22px;
+  margin: 20px 30px 10px;
+}
+
+/* ===== PRODUCT GRID ===== */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  padding: 0 30px 30px;
+}
+
+/* ===== CARD ===== */
+.product-card {
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  padding: 15px;
+  text-align: center;
+  position: relative;
+  transition: 0.3s;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+}
+
+/* ===== IMAGE ===== */
+.product-card img {
+  width: 100%;
+  height: 180px;
+  object-fit: contain;
+}
+
+/* ===== PRICE ===== */
+.price {
+  font-weight: bold;
+  margin: 10px 0;
+}
+
+/* ===== BUTTON ===== */
+.cart-btn {
+  background: #2874f0;
+  color: white;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+/* ===== WISHLIST ===== */
+.add {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: white;
+  border: none;
+  cursor: pointer;
+}
+
+.add.active {
+  color: red;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1024px) {
+  .product-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .product-grid {
+    grid-template-columns: 1fr;
+  }
+}
+/* section title */
+.section-title {
+  font-size: 22px;
+  margin: 20px 30px 10px;
+  font-weight: 600;
+}
+
+/* grid spacing fix */
+.product-grid {
+  padding: 0 30px 30px;
+}
+
+/* card improve */
+.product-card {
+  background: #fff;
+  border: 1px solid #eee;
+  transition: 0.3s;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+}
+
+/* fix random stretched images */
+.product-card img {
+  height: 180px;
+  object-fit: contain;
+}
+
+/* banner FIX (important) */
+.banner-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* 🔥 main fix */
+}
+/* ✅ SCROLL ROW (VISIBLE SCROLLER) */
+.scroll-row {
+  display: flex;
+  gap: 15px;
+  overflow-x: auto;
+  padding: 15px;
+}
+
+/* scrollbar visible */
+.scroll-row::-webkit-scrollbar {
+  height: 6px;
+}
+
+.scroll-row::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+/* card width */
+.scroll-row .product-card {
+  min-width: 200px;
+  flex: 0 0 auto;
+}
+
+/* hover */
+.product-card:hover {
+  transform: translateY(-8px);
+  transition: 0.3s;
+}
+/* ================= GLOBAL FONT (MODERN APP FEEL) ================= */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+body {
+  font-family: 'Inter', sans-serif;
+  color: #374151;
+  background: #fafafa;
+}
+
+/* ================= FILTER BAR (CLEAN MODERN UI) ================= */
+.filter-bar {
+  display: flex;
+  gap: 12px;
+  padding: 14px 16px;
+  margin: 12px 0 22px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* dropdown */
+.filter-bar select {
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  font-size: 14px;
+  color: #374151;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-bar select:hover {
+  border-color: #f9a8d4;
+}
+
+.filter-bar select:focus {
+  border-color: #f472b6;
+  box-shadow: 0 0 0 3px rgba(244, 114, 182, 0.15);
+}
+
+/* ================= SECTION TITLE (SOFT PREMIUM LOOK) ================= */
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 24px 0 12px;
+  color: #1f2937;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  letter-spacing: 0.2px;
+}
+
+/* soft gradient underline */
+.section-title::after {
+  content: "";
+  height: 3px;
+  width: 42px;
+  background: linear-gradient(90deg, #f472b6, #fbcfe8, transparent);
+  border-radius: 50px;
+}
+
+/* ================= MOBILE ================= */
+@media (max-width: 768px) {
+  .filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-bar select {
+    width: 100%;
+  }
+
+  .section-title {
+    font-size: 16px;
+  }
+}
+/* shop button new */
+.shop-btn {
+  padding: 12px 18px;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #ff4d8d, #ff8fb1);
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 6px 18px rgba(255, 77, 141, 0.25);
+}
+
+.shop-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(255, 77, 141, 0.35);
+}
+
+.shop-btn:active {
+  transform: scale(0.97);
+}
