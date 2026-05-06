@@ -4,17 +4,20 @@ import { useEffect, useState } from "react";
 import "../App.css";
 import { toggleWishlist } from "../features/WishlistSlice";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
 
 export default function ProductList({ search = "", category = "all" }) {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const wishlist = useSelector((state) => state.wishlist?.items || []);
+  const cartItems = useSelector((state) => state.cart.items);
 
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
 
   const [currentBanner, setCurrentBanner] = useState(0);
-
   const [priceRange, setPriceRange] = useState("all");
   const [sort, setSort] = useState("default");
 
@@ -29,7 +32,7 @@ export default function ProductList({ search = "", category = "all" }) {
     "https://rukminim1.flixcart.com/fk-p-flap/3200/1560/image/0417cb442593f5a1.png?q=60",
   ];
 
-  // ================= BANNER =================
+  // ================= BANNER (NO CHANGE) =================
   const nextBanner = () => setCurrentBanner((p) => (p + 1) % banners.length);
   const prevBanner = () =>
     setCurrentBanner((p) => (p === 0 ? banners.length - 1 : p - 1));
@@ -74,18 +77,16 @@ export default function ProductList({ search = "", category = "all" }) {
     });
   }, []);
 
-  // ================= FILTER LOGIC =================
+  // ================= FILTER =================
   useEffect(() => {
     let data = [...products];
 
-    // SEARCH
     if (search) {
       data = data.filter((p) =>
         p.title.toLowerCase().includes(search.toLowerCase())
       );
     }
 
-    // CATEGORY FIX (WORKING)
     if (category !== "all") {
       data = data.filter((p) => {
         const cat = (p.category || "").toLowerCase();
@@ -111,13 +112,10 @@ export default function ProductList({ search = "", category = "all" }) {
       });
     }
 
-    // PRICE FILTER
     if (priceRange === "low") data = data.filter((p) => p.price < 50);
-    if (priceRange === "mid")
-      data = data.filter((p) => p.price >= 50 && p.price <= 150);
+    if (priceRange === "mid") data = data.filter((p) => p.price >= 50 && p.price <= 150);
     if (priceRange === "high") data = data.filter((p) => p.price > 150);
 
-    // SORT
     if (sort === "low") data.sort((a, b) => a.price - b.price);
     if (sort === "high") data.sort((a, b) => b.price - a.price);
 
@@ -137,7 +135,7 @@ export default function ProductList({ search = "", category = "all" }) {
   return (
     <div>
 
-      {/* ================= BANNER (NO CHANGE AT ALL) ================= */}
+      {/* ================= BANNER (UNCHANGED) ================= */}
       <div className="banner">
         <img
           src={banners[currentBanner]}
@@ -174,7 +172,6 @@ export default function ProductList({ search = "", category = "all" }) {
 
       {/* ================= FILTER ================= */}
       <div className="filter-bar">
-
         <select onChange={(e) => setPriceRange(e.target.value)}>
           <option value="all">All</option>
           <option value="low">Low</option>
@@ -187,18 +184,19 @@ export default function ProductList({ search = "", category = "all" }) {
           <option value="low">Low → High</option>
           <option value="high">High → Low</option>
         </select>
-
       </div>
 
       {/* ================= PRODUCTS ================= */}
       <div className="product-grid">
-
         {currentProducts.map((p) => {
           const isInWishlist = wishlist.some((i) => i.id === p.id);
+          const cartItem = cartItems.find((item) => item.id === p.id);
+          const isInCart = !!cartItem;
 
           return (
             <div key={p.id} className="product-card">
 
+              {/* Wishlist */}
               <button
                 className={`add ${isInWishlist ? "active" : ""}`}
                 onClick={() => dispatch(toggleWishlist(p))}
@@ -212,17 +210,26 @@ export default function ProductList({ search = "", category = "all" }) {
 
               <p className="price">₹{(p.price * 13).toFixed(0)}</p>
 
+              {/* CART BUTTON (UPGRADED UX) */}
               <button
-                className="cart-btn"
-                onClick={() => dispatch(addToCart(p))}
+                className={`cart-btn ${isInCart ? "added" : ""}`}
+                onClick={() => {
+                  if (isInCart) {
+                    navigate("/cart");
+                  } else {
+                    dispatch(addToCart(p));
+                    toast.success("Added to cart 🛒");
+                  }
+                }}
               >
-                Add to Cart
+                {isInCart
+                  ? `Go to Cart (${cartItem.quantity})`
+                  : "Add to Cart"}
               </button>
 
             </div>
           );
         })}
-
       </div>
 
       {/* ================= PAGINATION ================= */}

@@ -1521,4 +1521,151 @@ button:active {
 .dropdown button:hover {
   background: #e63946;
 }
+/* more cart css */
 
+.cart-container {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+}
+
+.cart-left {
+  flex: 2;
+}
+
+.cart-right {
+  flex: 1;
+  border: 1px solid #eee;
+  padding: 15px;
+  border-radius: 10px;
+  background: #fff;
+  height: fit-content;
+}
+
+.cart-card {
+  display: flex;
+  gap: 15px;
+  border: 1px solid #eee;
+  padding: 10px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.cart-card img {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+}
+
+.qty {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.qty button {
+  padding: 5px 10px;
+  border: none;
+  background: #2874f0;
+  color: white;
+  border-radius: 5px;
+}
+
+.remove {
+  background: red;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  margin: 8px 0;
+}
+
+.summary-total {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.green {
+  color: green;
+}
+
+.cut-price {
+  text-decoration: line-through;
+  margin-left: 10px;
+  color: gray;
+}
+
+.coupon-box {
+  border: 1px dashed #999;
+  padding: 8px;
+  margin: 5px 0;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.checkout {
+  width: 100%;
+  background: #ff9f00;
+  padding: 10px;
+  border: none;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+.clear {
+  width: 100%;
+  background: #444;
+  color: white;
+  padding: 10px;
+  border: none;
+  margin-top: 10px;
+}
+
+.coupon-input {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.coupon-input input {
+  flex: 1;
+  padding: 8px;
+}
+
+.coupon-input button {
+  padding: 8px 12px;
+}
+/* success css */
+.success-container {
+  height: 80vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.success-box {
+  text-align: center;
+  padding: 30px;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+.success-box h1 {
+  color: green;
+}
+
+.success-box button {
+  margin-top: 15px;
+  padding: 10px 20px;
+  background: #ff9f00;
+  border: none;
+  cursor: pointer;
+}

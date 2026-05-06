@@ -7,6 +7,7 @@ import {
 } from "../features/CartSlice";
 import { useState } from "react";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 export default function Cart() {
   const { items } = useSelector((state) => state.cart);
@@ -14,15 +15,16 @@ export default function Cart() {
 
   const [coupon, setCoupon] = useState("");
   const [discount, setDiscount] = useState(0);
+  const navigate = useNavigate();
 
-  // 🔥 Coupon data (advanced)
+  // ================= COUPONS =================
   const coupons = [
     { code: "FLAT10", type: "percent", value: 10, min: 500, max: 200 },
     { code: "SAVE100", type: "flat", value: 100, min: 800 },
     { code: "SALE20", type: "percent", value: 20, min: 1000, max: 300 },
   ];
 
-  // 🔥 MRP
+  // ================= PRICE CALC =================
   const mrp = items.reduce(
     (sum, item) => sum + item.price * item.quantity * 83,
     0
@@ -31,19 +33,18 @@ export default function Cart() {
   const productDiscount = mrp * 0.2;
   const subtotal = mrp - productDiscount;
   const delivery = subtotal > 500 ? 0 : 40;
+  const totalSaving = productDiscount + discount;
   const total = subtotal + delivery - discount;
 
-  // 🎟️ Apply Coupon (SMART)
-  const applyCoupon = (code) => {
-    const c = code || coupon;
-    const found = coupons.find((cp) => cp.code === c);
+  // ================= APPLY COUPON =================
+  const applyCoupon = () => {
+    const found = coupons.find((c) => c.code === coupon);
 
     if (!found) {
       toast.error("Invalid Coupon ❌");
       return;
     }
 
-    // 👉 check used coupons
     const used = JSON.parse(localStorage.getItem("usedCoupons")) || [];
 
     if (used.includes(found.code)) {
@@ -51,7 +52,6 @@ export default function Cart() {
       return;
     }
 
-    // 👉 min order check
     if (subtotal < found.min) {
       toast.error(`Min ₹${found.min} required ❌`);
       return;
@@ -61,65 +61,66 @@ export default function Cart() {
 
     if (found.type === "percent") {
       discountValue = (subtotal * found.value) / 100;
-
-      if (found.max) {
-        discountValue = Math.min(discountValue, found.max);
-      }
+      if (found.max) discountValue = Math.min(discountValue, found.max);
     } else {
       discountValue = found.value;
     }
 
     setDiscount(discountValue);
 
-    // 👉 mark used
     localStorage.setItem(
       "usedCoupons",
       JSON.stringify([...used, found.code])
     );
 
-    toast.success(`${found.code} applied 🎉`);
-    setCoupon(c);
+    toast.success("Coupon Applied 🎉");
   };
 
-  // 💳 Dummy payment
+  // ================= PLACE ORDER =================
   const handlePayment = () => {
     if (items.length === 0) {
       toast.error("Cart is empty ❌");
       return;
     }
 
-    toast.info("Processing payment... ⏳");
+    toast.info("Processing order... ⏳");
+setTimeout(() => {
+  const orderId = "ORD" + Date.now();
 
-    setTimeout(() => {
-      const orderId = "ORD" + Date.now();
-      toast.success(`🎉 Order ${orderId} placed successfully!`);
-      dispatch(clearCart());
-    }, 1500);
+  dispatch(clearCart());
+  setDiscount(0);
+  setCoupon("");
+
+  // go to success page
+  navigate("/order-success", {
+    state: { orderId }
+  });
+
+}, 1500);
+    
   };
 
   return (
     <div className="cart-container">
 
-      {/* LEFT */}
+      {/* ================= LEFT SIDE ================= */}
       <div className="cart-left">
-        <h2>My Cart 🛒</h2>
+        <h2>🛒 My Cart</h2>
 
         {items.length === 0 && <p>Your cart is empty 😢</p>}
 
         {items.map((item) => (
           <div className="cart-card" key={item.id}>
+
             <img src={item.image} alt={item.title} />
 
             <div className="cart-details">
+
               <h3>{item.title}</h3>
 
               <p>
                 ₹{(item.price * 83 * 0.8).toFixed(0)}
-                <span style={{
-                  textDecoration: "line-through",
-                  marginLeft: "10px",
-                  color: "#888"
-                }}>
+                <span className="cut-price">
                   ₹{(item.price * 83).toFixed(0)}
                 </span>
               </p>
@@ -129,6 +130,7 @@ export default function Cart() {
                 <span>{item.quantity}</span>
                 <button onClick={() => dispatch(increaseQty(item.id))}>+</button>
               </div>
+
             </div>
 
             <button
@@ -140,11 +142,12 @@ export default function Cart() {
             >
               Remove
             </button>
+
           </div>
         ))}
       </div>
 
-      {/* RIGHT */}
+      {/* ================= RIGHT SIDE ================= */}
       {items.length > 0 && (
         <div className="cart-right">
 
@@ -157,15 +160,22 @@ export default function Cart() {
 
           <div className="summary-row">
             <span>Product Discount</span>
-            <span style={{ color: "green" }}>
+            <span className="green">
               -₹{productDiscount.toFixed(0)}
             </span>
           </div>
 
           <div className="summary-row">
             <span>Coupon Discount</span>
-            <span style={{ color: "green" }}>
+            <span className="green">
               -₹{discount.toFixed(0)}
+            </span>
+          </div>
+
+          <div className="summary-row">
+            <span>Total Savings</span>
+            <span className="green">
+              -₹{totalSaving.toFixed(0)}
             </span>
           </div>
 
@@ -181,27 +191,28 @@ export default function Cart() {
             <span>₹{total.toFixed(0)}</span>
           </div>
 
-          {/* 🎟️ Input */}
-          <div style={{ marginTop: "10px" }}>
+          {/* ================= COUPON INPUT ================= */}
+          <div className="coupon-input">
             <input
               placeholder="Enter coupon"
               value={coupon}
-              onChange={(e) => setCoupon(e.target.value)}
+              onChange={(e) => setCoupon(e.target.value.toUpperCase())}
             />
-            <button onClick={() => applyCoupon()}>Apply</button>
+
+            <button onClick={applyCoupon} disabled={!coupon}>
+              Apply
+            </button>
           </div>
 
-          {/* 🔥 Coupon UI */}
-          <div style={{ marginTop: "15px" }}>
-            <p><b>Available Coupons:</b></p>
-
+          {/* ================= COUPON LIST ================= */}
+          <div className="coupon-list">
             {coupons.map((c) => (
               <div
                 key={c.code}
                 className="coupon-box"
-                onClick={() => applyCoupon(c.code)}
+                onClick={() => setCoupon(c.code)}
               >
-                {c.code} - 
+                <b>{c.code}</b>{" "}
                 {c.type === "percent"
                   ? `${c.value}% OFF`
                   : `₹${c.value} OFF`}
@@ -211,7 +222,7 @@ export default function Cart() {
             ))}
           </div>
 
-          {/* Payment */}
+          {/* ================= ACTION BUTTONS ================= */}
           <button className="checkout" onClick={handlePayment}>
             Place Order
           </button>
@@ -220,13 +231,17 @@ export default function Cart() {
             className="clear"
             onClick={() => {
               dispatch(clearCart());
+              setDiscount(0);
+              setCoupon("");
               toast.success("Cart Cleared");
             }}
           >
             Clear Cart
           </button>
+
         </div>
       )}
+
     </div>
   );
 }
