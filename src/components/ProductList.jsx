@@ -19,7 +19,6 @@ export default function ProductList({ search = "", category = "all" }) {
 
   const INR_RATE = 83;
 
-  // ================= OLD BANNER RESTORED =================
   const banners = [
     "https://media.istockphoto.com/id/1184848537/photo/vintage-christmas-frame-border-flat-lay-fir-three-branches-blue-balls-and-snowflakes-over.jpg?s=2048x2048&w=is&k=20&c=02iHNCc0VTkxICvmKPMDy527aySaaVuHW3FZFA8kqlA=",
     "https://rukminim1.flixcart.com/fk-p-flap/3200/1560/image/2192ad9d315c3d3b.jpg?q=60",
@@ -38,7 +37,6 @@ export default function ProductList({ search = "", category = "all" }) {
     return () => clearInterval(interval);
   }, []);
 
-  // ================= FETCH (UNCHANGED) =================
   useEffect(() => {
     Promise.all([
       fetch("https://dummyjson.com/products?limit=100").then((r) => r.json()),
@@ -67,6 +65,24 @@ export default function ProductList({ search = "", category = "all" }) {
     });
   }, []);
 
+  // ================= 🔥 ADDED VEG FILTER LOGIC =================
+  const isVegFood = (title, category) => {
+    const text = (title + " " + category).toLowerCase();
+
+    const nonVegKeywords = [
+      "chicken",
+      "mutton",
+      "fish",
+      "beef",
+      "egg",
+      "prawn",
+      "shrimp",
+      "meat",
+    ];
+
+    return !nonVegKeywords.some((word) => text.includes(word));
+  };
+
   const getCategory = (type) => {
     return products.filter((p) => {
       const c = (p.category || "").toLowerCase();
@@ -83,7 +99,13 @@ export default function ProductList({ search = "", category = "all" }) {
           c.includes("phone")
         );
 
-      if (type === "food") return c.includes("groceries");
+      if (type === "food")
+        return (
+          c.includes("groceries") ||
+          c.includes("food") ||
+          c.includes("fruits") ||
+          c.includes("vegetables")
+        );
 
       if (type === "home") return c.includes("furniture");
 
@@ -104,7 +126,10 @@ export default function ProductList({ search = "", category = "all" }) {
   const trending = applySearch(products).slice(0, 15);
   const fashion = applySearch(getCategory("fashion")).slice(0, 15);
   const electronics = applySearch(getCategory("electronics")).slice(0, 15);
-  const food = applySearch(getCategory("food")).slice(0, 15);
+
+  const food = applySearch(getCategory("food"))
+    .filter((p) => isVegFood(p.title, p.category))
+    .slice(0, 15);
 
   const render = (list) => (
     <div className="scroll-row">
@@ -147,7 +172,7 @@ export default function ProductList({ search = "", category = "all" }) {
 
   return (
     <div>
-      {/* ================= OLD BANNER UI RESTORED ================= */}
+      {/* BANNER */}
       <div className="banner">
         <img
           src={banners[currentBanner]}
@@ -197,29 +222,36 @@ export default function ProductList({ search = "", category = "all" }) {
         </div>
       </div>
 
-      {/* ================= PRODUCTS ================= */}
-     <div id="products-section">
-      {category === "all" ? (
-        <>
-          <h2 className="section-title">🔥 Trending</h2>
-          {render(trending)}
+      {/* PRODUCTS */}
+      <div id="products-section">
+        {category === "all" ? (
+          <>
+            <h2 className="section-title">🔥 Trending</h2>
+            {render(trending)}
 
-          <h2 className="section-title">👕 Fashion</h2>
-          {render(fashion)}
+            <h2 className="section-title">👕 Fashion</h2>
+            {render(fashion)}
 
-          <h2 className="section-title">📱 Electronics</h2>
-          {render(electronics)}
+            <h2 className="section-title">📱 Electronics</h2>
+            {render(electronics)}
 
-          <h2 className="section-title">🍔 Food</h2>
-          {render(food)}
-        </>
-      ) : (
-        <>
-          <h2 className="section-title">{category}</h2>
-          {render(applySearch(getCategory(category)))}
-        </>
-      )}
-    </div>
+            <h2 className="section-title">🍔 Food</h2>
+            {render(food)}
+          </>
+        ) : (
+          <>
+            <h2 className="section-title">{category}</h2>
+
+            {render(
+              category === "food"
+                ? applySearch(getCategory(category)).filter((p) =>
+                    isVegFood(p.title, p.category),
+                  )
+                : applySearch(getCategory(category)),
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 }
