@@ -6,16 +6,18 @@ import {
   clearCart,
 } from "../features/CartSlice";
 import { useState } from "react";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
 export default function Cart() {
   const { items } = useSelector((state) => state.cart);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [coupon, setCoupon] = useState("");
   const [discount, setDiscount] = useState(0);
-  const navigate = useNavigate();
+
+  const INR_RATE = 83;
 
   // ================= COUPONS =================
   const coupons = [
@@ -26,8 +28,8 @@ export default function Cart() {
 
   // ================= PRICE CALC =================
   const mrp = items.reduce(
-    (sum, item) => sum + item.price * item.quantity * 83,
-    0
+    (sum, item) => sum + item.price * item.quantity * INR_RATE,
+    0,
   );
 
   const productDiscount = mrp * 0.2;
@@ -68,81 +70,74 @@ export default function Cart() {
 
     setDiscount(discountValue);
 
-    localStorage.setItem(
-      "usedCoupons",
-      JSON.stringify([...used, found.code])
-    );
+    localStorage.setItem("usedCoupons", JSON.stringify([...used, found.code]));
 
     toast.success("Coupon Applied 🎉");
   };
 
-  // ================= PLACE ORDER =================
-  const handlePayment = () => {
+  // ================= CHECKOUT =================
+  const handleCheckout = () => {
     if (items.length === 0) {
       toast.error("Cart is empty ❌");
       return;
     }
 
-    toast.info("Processing order... ⏳");
-setTimeout(() => {
-  const orderId = "ORD" + Date.now();
-
-  dispatch(clearCart());
-  setDiscount(0);
-  setCoupon("");
-
-  // go to success page
-  navigate("/order-success", {
-    state: { orderId }
-  });
-
-}, 1500);
-    
+    navigate("/checkout");
   };
 
   return (
-    <div className="cart-container">
-
+    <div className="cart-page">
       {/* ================= LEFT SIDE ================= */}
       <div className="cart-left">
-        <h2>🛒 My Cart</h2>
+        <h2 className="cart-title">🛒 My Cart</h2>
+        {items.length === 0 && (
+          <div className="empty-cart">
+            <div className="empty-box">
+              <div className="emoji">🛒</div>
+              <h2>Your cart is empty</h2>
+              <p>Looks like you haven’t added anything yet</p>
 
-        {items.length === 0 && <p>Your cart is empty 😢</p>}
+              <button onClick={() => navigate("/")}>Continue Shopping</button>
+            </div>
+          </div>
+        )}
 
         {items.map((item) => (
           <div className="cart-card" key={item.id}>
-
             <img src={item.image} alt={item.title} />
 
             <div className="cart-details">
-
               <h3>{item.title}</h3>
 
               <p>
-                ₹{(item.price * 83 * 0.8).toFixed(0)}
+                ₹{(item.price * INR_RATE * 0.8).toFixed(0)}
                 <span className="cut-price">
-                  ₹{(item.price * 83).toFixed(0)}
+                  ₹{(item.price * INR_RATE).toFixed(0)}
                 </span>
               </p>
 
               <div className="qty">
-                <button onClick={() => dispatch(decreaseQty(item.id))}>-</button>
-                <span>{item.quantity}</span>
-                <button onClick={() => dispatch(increaseQty(item.id))}>+</button>
-              </div>
+                <button onClick={() => dispatch(decreaseQty(item.id))}>
+                  -
+                </button>
 
+                <span>{item.quantity}</span>
+
+                <button onClick={() => dispatch(increaseQty(item.id))}>
+                  +
+                </button>
+              </div>
             </div>
 
             <button
               className="remove"
               onClick={() => {
                 dispatch(removeFromCart(item.id));
-                toast.info("Removed from cart");
+                toast.success("Removed from cart");
               }}
             >
               Remove
             </button>
-
           </div>
         ))}
       </div>
@@ -150,7 +145,6 @@ setTimeout(() => {
       {/* ================= RIGHT SIDE ================= */}
       {items.length > 0 && (
         <div className="cart-right">
-
           <h3>Price Details</h3>
 
           <div className="summary-row">
@@ -160,23 +154,12 @@ setTimeout(() => {
 
           <div className="summary-row">
             <span>Product Discount</span>
-            <span className="green">
-              -₹{productDiscount.toFixed(0)}
-            </span>
+            <span className="green">-₹{productDiscount.toFixed(0)}</span>
           </div>
 
           <div className="summary-row">
             <span>Coupon Discount</span>
-            <span className="green">
-              -₹{discount.toFixed(0)}
-            </span>
-          </div>
-
-          <div className="summary-row">
-            <span>Total Savings</span>
-            <span className="green">
-              -₹{totalSaving.toFixed(0)}
-            </span>
+            <span className="green">-₹{discount.toFixed(0)}</span>
           </div>
 
           <div className="summary-row">
@@ -191,7 +174,7 @@ setTimeout(() => {
             <span>₹{total.toFixed(0)}</span>
           </div>
 
-          {/* ================= COUPON INPUT ================= */}
+          {/* ================= COUPON ================= */}
           <div className="coupon-input">
             <input
               placeholder="Enter coupon"
@@ -204,7 +187,7 @@ setTimeout(() => {
             </button>
           </div>
 
-          {/* ================= COUPON LIST ================= */}
+          {/* ================= COUPON BOX ================= */}
           <div className="coupon-list">
             {coupons.map((c) => (
               <div
@@ -213,18 +196,16 @@ setTimeout(() => {
                 onClick={() => setCoupon(c.code)}
               >
                 <b>{c.code}</b>{" "}
-                {c.type === "percent"
-                  ? `${c.value}% OFF`
-                  : `₹${c.value} OFF`}
+                {c.type === "percent" ? `${c.value}% OFF` : `₹${c.value} OFF`}
                 <br />
                 <small>Min ₹{c.min}</small>
               </div>
             ))}
           </div>
 
-          {/* ================= ACTION BUTTONS ================= */}
-          <button className="checkout" onClick={handlePayment}>
-            Place Order
+          {/* ================= ACTIONS ================= */}
+          <button className="checkout" onClick={handleCheckout}>
+            Proceed to Checkout 🚀
           </button>
 
           <button
@@ -238,10 +219,8 @@ setTimeout(() => {
           >
             Clear Cart
           </button>
-
         </div>
       )}
-
     </div>
   );
 }

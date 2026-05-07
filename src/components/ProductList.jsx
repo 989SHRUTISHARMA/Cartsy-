@@ -138,7 +138,14 @@ export default function ProductList({ search = "", category = "all" }) {
         const isInCart = cartItems.some((i) => i.id === p.id);
 
         return (
-          <div key={p.id} className="product-card">
+          <div
+            key={p.id}
+            className="product-card"
+            onClick={() =>
+              navigate(`/product/${p.id}`, { state: { product: p } })
+            }
+            style={{ cursor: "pointer" }}
+          >
             <button
               className={`add ${isInWishlist ? "active" : ""}`}
               onClick={() => dispatch(toggleWishlist(p))}
