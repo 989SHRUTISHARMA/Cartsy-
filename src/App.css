@@ -2697,44 +2697,64 @@ body {
   }
 }
 .video-section {
-  padding: 40px 0;   /* 🔥 reduced height */
+  padding: 40px 0;
   background: #f8f9fc;
 }
 
+/* TITLE */
 .video-section h2 {
+  text-align: center;
   font-size: 26px;
-  margin-bottom: 20px;
+  font-weight: 700;
+  margin-bottom: 25px;
   color: #111;
 }
 
-/* CONTAINER */
+/* GRID (RESPONSIVE) */
 .video-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 18px;
-  max-width: 1000px;
+  max-width: 1100px;
   margin: auto;
   padding: 0 15px;
 }
 
-/* CARD */
+/* VIDEO CARD */
 .video-card {
+  position: relative;
   border-radius: 14px;
   overflow: hidden;
   background: #000;
-  aspect-ratio: 16 / 9;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+  aspect-ratio: 16 / 9;   /* ✅ keeps perfect shape */
+  box-shadow: 0 10px 25px rgba(0,0,0,0.12);
 }
 
-/* VIDEO */
+/* IFRAME RESPONSIVE */
 .video-card iframe {
   width: 100%;
   height: 100%;
   border: none;
+  display: block;
 }
-.video-section h2 {
-  text-align: center;
-  font-size: 28px;
-  font-weight: 700;
-  margin: 0 0 30px 0;
+
+/* HOVER EFFECT */
+.video-card:hover {
+  transform: scale(1.02);
+  transition: 0.3s ease;
+}
+
+/* MOBILE FIX */
+@media (max-width: 768px) {
+  .video-section {
+    padding: 30px 0;
+  }
+
+  .video-section h2 {
+    font-size: 22px;
+  }
+
+  .video-grid {
+    grid-template-columns: 1fr; /* single column on mobile */
+  }
 }
