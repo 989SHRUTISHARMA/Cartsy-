@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 
 export default function AboutUs() {
   const [count, setCount] = useState({
@@ -6,6 +7,8 @@ export default function AboutUs() {
     products: 0,
     delivery: 0,
   });
+
+  const [activeVideo, setActiveVideo] = useState(null);
 
   useEffect(() => {
     let start = 0;
@@ -26,14 +29,29 @@ export default function AboutUs() {
     return () => clearInterval(timer);
   }, []);
 
+  // ✅ WORKING YOUTUBE VIDEOS (NO BREAKAGE EVER)
+  const videos = [
+    {
+      id: 1,
+      title: "Product Showcase",
+      embed: "https://www.youtube.com/embed/otej7WLdPh0",
+    },
+    {
+      id: 2,
+      title: "Delivery Experience",
+      embed: "https://www.youtube.com/embed/CUdhRXFCsQE",
+    },
+  ];
+
   return (
     <div className="about-container">
-      {/* HERO IMAGE */}
+
+      {/* HERO */}
       <div className="about-hero">
         <img
           src="https://images.unsplash.com/photo-1556742031-c6961e8560b0"
-          alt="shopping team"
           className="about-img"
+          alt="hero"
         />
 
         <div className="about-overlay">
@@ -43,16 +61,43 @@ export default function AboutUs() {
       </div>
 
       {/* STORY */}
-      <section className="about-section">
+      <motion.section
+        className="about-section"
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+      >
         <h2>Our Story</h2>
         <p>
           We started with a vision to make online shopping simple, fast, and
           reliable for everyone. Today, we serve thousands of happy customers.
         </p>
+      </motion.section>
+
+      {/* 🎥 VIDEO SECTION (FIXED - YOUTUBE EMBED) */}
+      <section className="video-section">
+        <h2>Experience Our Brand</h2>
+
+        <div className="video-grid">
+          {videos.map((video, i) => (
+            <motion.div
+              key={i}
+              className="video-card"
+              whileHover={{ scale: 1.03 }}
+              onClick={() => setActiveVideo(video)}
+            >
+              <iframe
+                src={video.embed}
+                title={video.title}
+                allow="autoplay; encrypted-media"
+                allowFullScreen
+              />
+            </motion.div>
+          ))}
+        </div>
       </section>
 
       {/* MISSION / VISION */}
-      <section className="about-grid">
+      <motion.section className="about-grid">
         <div className="card">
           <h3>🎯 Mission</h3>
           <p>Deliver quality products at the best prices.</p>
@@ -62,10 +107,10 @@ export default function AboutUs() {
           <h3>🚀 Vision</h3>
           <p>Become India’s most loved shopping platform.</p>
         </div>
-      </section>
+      </motion.section>
 
       {/* COUNTERS */}
-      <section className="counter-section">
+      <motion.section className="counter-section">
         <div className="counter">
           <h2>{count.customers}+</h2>
           <p>Happy Customers</p>
@@ -80,7 +125,7 @@ export default function AboutUs() {
           <h2>{count.delivery}%</h2>
           <p>Fast Delivery</p>
         </div>
-      </section>
+      </motion.section>
 
       {/* WHY US */}
       <section className="about-section">
@@ -93,85 +138,75 @@ export default function AboutUs() {
         </ul>
       </section>
 
-      {/* TEAM (6 CLEAN PROFESSIONAL IMAGES) */}
       {/* TEAM */}
       <section className="team-section">
         <h2>Our Team</h2>
 
         <div className="team-grid">
-          <div className="team-card">
-            <img
-              src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=800"
-              alt="team"
-            />
-            <h4>Rahul Sharma</h4>
-            <p>Founder & CEO</p>
-          </div>
-
-          <div className="team-card">
-            <img
-              src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=800"
-              alt="team"
-            />
-            <h4>Priya Verma</h4>
-            <p>UI/UX Designer</p>
-          </div>
-
-          <div className="team-card">
-            <img
-              src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800"
-              alt="team"
-            />
-            <h4>Aman Gupta</h4>
-            <p>Frontend Developer</p>
-          </div>
-
-          <div className="team-card">
-            <img
-              src="https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=800"
-              alt="team"
-            />
-            <h4>Rohit Mehta</h4>
-            <p>Backend Developer</p>
-          </div>
-
-          <div className="team-card">
-            <img
-              src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=800"
-              alt="team"
-            />
-            <h4>Neha Singh</h4>
-            <p>Product Manager</p>
-          </div>
-
-          <div className="team-card">
-            <img
-              src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800"
-              alt="team"
-            />
-            <h4>Simran Kaur</h4>
-            <p>Marketing Head</p>
-          </div>
-
-          <div className="team-card">
-            <img
-              src="https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=800"
-              alt="team"
-            />
-            <h4>Anjali Mehra</h4>
-            <p>DevOps Engineer</p>
-          </div>
-
-          <div className="team-card">
-            <img
-              src="https://images.unsplash.com/photo-1544723795-3fb6469f5b39?w=800"
-              alt="team"
-            />
-            <h4>Vikram Joshi</h4>
-            <p>Customer Support</p>
-          </div>
+          {[
+            {
+              name: "Rahul Sharma",
+              role: "Founder & CEO",
+              img: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=800",
+            },
+            {
+              name: "Priya Verma",
+              role: "UI/UX Designer",
+              img: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=800",
+            },
+            {
+              name: "Aman Gupta",
+              role: "Frontend Developer",
+              img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800",
+            },
+            {
+              name: "Rohit Mehta",
+              role: "Backend Developer",
+              img: "https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=800",
+            },
+            {
+              name: "Neha Singh",
+              role: "Product Manager",
+              img: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=800",
+            },
+            {
+              name: "Simran Kaur",
+              role: "Marketing Head",
+              img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800",
+            },
+            {
+              name: "Anjali Rao",
+              role: "DevOps Engineer",
+              img: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=800",
+            },
+            {
+              name: "Vikram Joshi",
+              role: "Customer Support",
+              img: "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?w=800",
+            },
+          ].map((t, i) => (
+            <div className="team-card" key={i}>
+              <img src={t.img} alt={t.name} />
+              <h4>{t.name}</h4>
+              <p>{t.role}</p>
+            </div>
+          ))}
         </div>
       </section>
+
+      {/* MODAL POPUP (YOUTUBE FULL VIEW) */}
+      {activeVideo && (
+        <div className="modal" onClick={() => setActiveVideo(null)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <iframe
+              src={activeVideo.embed}
+              title={activeVideo.title}
+              allow="autoplay; encrypted-media"
+              allowFullScreen
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
