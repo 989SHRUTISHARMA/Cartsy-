@@ -19,6 +19,11 @@ export default function ProductList({ search = "", category = "all" }) {
 
   const INR_RATE = 83;
 
+  // ✅ FORMAT PRICE (INDIAN STYLE)
+  const formatINR = (value) => {
+    return value.toLocaleString("en-IN");
+  };
+
   const banners = [
     "https://media.istockphoto.com/id/1184848537/photo/vintage-christmas-frame-border-flat-lay-fir-three-branches-blue-balls-and-snowflakes-over.jpg?s=2048x2048&w=is&k=20&c=02iHNCc0VTkxICvmKPMDy527aySaaVuHW3FZFA8kqlA=",
     "https://rukminim1.flixcart.com/fk-p-flap/3200/1560/image/2192ad9d315c3d3b.jpg?q=60",
@@ -60,12 +65,10 @@ export default function ProductList({ search = "", category = "all" }) {
       ];
 
       const unique = Array.from(new Map(all.map((i) => [i.title, i])).values());
-
       setProducts(unique);
     });
   }, []);
 
-  // ================= 🔥 ADDED VEG FILTER LOGIC =================
   const isVegFood = (title, category) => {
     const text = (title + " " + category).toLowerCase();
 
@@ -119,7 +122,7 @@ export default function ProductList({ search = "", category = "all" }) {
   const applySearch = (list) => {
     if (!search) return list;
     return list.filter((p) =>
-      p.title.toLowerCase().includes(search.toLowerCase()),
+      p.title.toLowerCase().includes(search.toLowerCase())
     );
   };
 
@@ -136,6 +139,12 @@ export default function ProductList({ search = "", category = "all" }) {
       {list.map((p) => {
         const isInWishlist = wishlist.some((i) => i.id === p.id);
         const isInCart = cartItems.some((i) => i.id === p.id);
+
+        // ================= PRICE LOGIC (UPDATED) =================
+        const dealPrice = Math.round(p.price * INR_RATE * 0.75);
+        const mrp = Math.round(dealPrice * 1.35);
+        const discount = mrp - dealPrice;
+        const discountPercent = Math.round((discount / mrp) * 100);
 
         return (
           <div
@@ -157,7 +166,20 @@ export default function ProductList({ search = "", category = "all" }) {
 
             <h4>{p.title.slice(0, 40)}</h4>
 
-            <p className="price">₹{(p.price * INR_RATE).toFixed(0)}</p>
+            {/* ================= PRICE BLOCK ================= */}
+            <div className="price-block">
+              <p className="deal-price">
+                ₹{formatINR(dealPrice)}
+              </p>
+
+              <p className="mrp">
+                M.R.P: <span>₹{formatINR(mrp)}</span>
+              </p>
+
+              <p className="discount">
+                You Save ₹{formatINR(discount)} ({discountPercent}% OFF)
+              </p>
+            </div>
 
             <button
               className="cart-btn"
@@ -192,18 +214,17 @@ export default function ProductList({ search = "", category = "all" }) {
         {currentBanner === 0 && (
           <>
             <div className="overlay"></div>
-
             <div className="banner-content">
               <h1>Discover Amazing Products </h1>
               <p>Handpicked deals, just for you. Shop smart, shop better.</p>
 
               <button
                 className="shop-btn"
-                onClick={() => {
-                  document.getElementById("products-section")?.scrollIntoView({
-                    behavior: "smooth",
-                  });
-                }}
+                onClick={() =>
+                  document
+                    .getElementById("products-section")
+                    ?.scrollIntoView({ behavior: "smooth" })
+                }
               >
                 Explore Products
               </button>
@@ -248,13 +269,12 @@ export default function ProductList({ search = "", category = "all" }) {
         ) : (
           <>
             <h2 className="section-title">{category}</h2>
-
             {render(
               category === "food"
                 ? applySearch(getCategory(category)).filter((p) =>
-                    isVegFood(p.title, p.category),
+                    isVegFood(p.title, p.category)
                   )
-                : applySearch(getCategory(category)),
+                : applySearch(getCategory(category))
             )}
           </>
         )}
