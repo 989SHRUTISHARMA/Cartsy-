@@ -4,15 +4,21 @@ import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 export default function ForgotPassword() {
 
   const [email, setEmail] = useState("");
+  const [success, setSuccess] = useState("");
 
   const auth = getAuth();
 
   const resetPassword = async () => {
     try {
+
       await sendPasswordResetEmail(auth, email);
-      alert("Reset email sent!");
+
+      setSuccess("Reset email sent successfully!");
+
     } catch (error) {
-      alert(error.message);
+
+      setSuccess(error.message);
+
     }
   };
 
@@ -43,6 +49,12 @@ export default function ForgotPassword() {
         >
           Reset Password
         </button>
+
+        {success && (
+          <p className="success-message">
+            {success}
+          </p>
+        )}
 
       </div>
 
