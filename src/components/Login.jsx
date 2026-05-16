@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { auth } from "../config/firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { useNavigate } from "react-router-dom";
-
+import { useNavigate, Link } from "react-router-dom";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -36,6 +35,7 @@ function Login() {
         <h3>Sign-In</h3>
 
         <form onSubmit={handleSubmit}>
+
           <label>Email</label>
           <input
             type="email"
@@ -54,9 +54,17 @@ function Login() {
             required
           />
 
+          {/* Forgot Password */}
+          <p className="forgot-password">
+            <Link to="/forgot-password">
+              Forgot Password?
+            </Link>
+          </p>
+
           <button type="submit" disabled={loading}>
             {loading ? "Signing in..." : "Sign-In"}
           </button>
+
         </form>
 
         {error && <p className="error">{error}</p>}
@@ -65,9 +73,13 @@ function Login() {
           By continuing, you agree to Cartsy's Conditions of Use.
         </p>
 
-        <button className="create-btn" onClick={() => navigate("/signup")}>
+        <button
+          className="create-btn"
+          onClick={() => navigate("/signup")}
+        >
           Create your Cartsy account
         </button>
+
       </div>
     </div>
   );

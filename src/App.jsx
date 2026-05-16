@@ -12,6 +12,7 @@ import Signup from "./components/Signup";
 import OrderSuccess from "./components/OrderSuccess";
 import Checkout from "./components/Checkout";
 import AboutUs from "./components/AboutUs";
+import ForgotPassword from "./components/Forgot Password page";
 
 import "./App.css";
 import { Toaster } from "react-hot-toast";
@@ -28,6 +29,7 @@ function App() {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
     });
+
     return () => unsubscribe();
   }, []);
 
@@ -47,17 +49,22 @@ function App() {
 
       <Routes>
 
-        {/* HOME PAGE (PRODUCTS + ABOUT SECTION TOGETHER) */}
+        {/* HOME PAGE */}
         <Route
           path="/"
           element={
             <>
-              <ProductList search={search} category={category} />
-              <AboutUs />   {/* ✅ SHOW BELOW PRODUCTS */}
+              <ProductList
+                search={search}
+                category={category}
+              />
+
+              <AboutUs />
             </>
           }
         />
 
+        {/* CART */}
         <Route
           path="/cart"
           element={
@@ -67,6 +74,7 @@ function App() {
           }
         />
 
+        {/* WISHLIST */}
         <Route
           path="/wishlist"
           element={
@@ -76,24 +84,50 @@ function App() {
           }
         />
 
-        <Route path="/checkout" element={<Checkout />} />
-        <Route path="/product/:id" element={<ProductDetail />} />
+        {/* CHECKOUT */}
+        <Route
+          path="/checkout"
+          element={<Checkout />}
+        />
 
+        {/* PRODUCT DETAIL */}
+        <Route
+          path="/product/:id"
+          element={<ProductDetail />}
+        />
+
+        {/* LOGIN */}
         <Route
           path="/login"
-          element={user ? <Navigate to="/" /> : <Login />}
+          element={
+            user ? <Navigate to="/" /> : <Login />
+          }
         />
 
+        {/* SIGNUP */}
         <Route
           path="/signup"
-          element={user ? <Navigate to="/" /> : <Signup />}
+          element={
+            user ? <Navigate to="/" /> : <Signup />
+          }
         />
 
-        <Route path="/order-success" element={<OrderSuccess />} />
+        {/* ORDER SUCCESS */}
+        <Route
+          path="/order-success"
+          element={<OrderSuccess />}
+        />
+
+        {/* FORGOT PASSWORD */}
+        <Route
+          path="/forgot-password"
+          element={<ForgotPassword />}
+        />
 
       </Routes>
 
       <Footer />
+
       <Toaster position="top-right" />
 
     </BrowserRouter>

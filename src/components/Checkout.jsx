@@ -7,7 +7,7 @@ import "../App.css";
 export default function Checkout() {
   const cartItems = useSelector((state) => state.cart.items);
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const Dispatch = useDispatch();
 
   const INR_RATE = 83;
 
