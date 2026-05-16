@@ -18,13 +18,15 @@ export default function ForgotPassword() {
 
   return (
 
-    <div className="forgot-container">
+    <div className="login-container">
 
-      <div className="forgot-card">
+      <div className="login-card">
 
-        <h2>Forgot Password</h2>
+        <h2 className="logo">Cartsy</h2>
 
-        <p>
+        <h3>Forgot Password</h3>
+
+        <p className="forgot-subtext">
           Enter your registered email address
         </p>
 
