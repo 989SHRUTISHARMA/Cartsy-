@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-
 import ProductDetail from "./components/ProductDetail";
 import ProductList from "./components/ProductList";
 import Cart from "./components/Cart";
